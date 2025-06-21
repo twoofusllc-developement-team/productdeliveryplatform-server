@@ -1,6 +1,21 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+
+const auditFields = {
+    tenantId: {
+        type: Schema.Types.ObjectId,
+        required: true
+      },
+      isDeleted: {
+        type: Boolean,
+        default: false
+      },
+      deletedAt: {
+        type: Date
+      },
+};
+
 const personSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -37,7 +52,13 @@ const personSchema = new mongoose.Schema({
     shopName: String,
     shopDescription: String,
     shopBanner: String,
-    socialLinks: [String],
+    socialLinks: [{
+        type: {
+            type: String,
+            enum: ['facebook', 'instagram', 'twitter','tiktok','youtube', 'linkedin', 'other']
+        },
+        link: String
+    }],
     shippingPolicy: String,
     deliverySettings: String,
   },
@@ -71,17 +92,7 @@ const personSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  tenantId: {
-    type: Schema.Types.ObjectId,
-    required: true
-  },
-  isDeleted: {
-    type: Boolean,
-    default: false
-  },
-  deletedAt: {
-    type: Date
-  }
+ 
 }, { timestamps: true });
 
 module.exports = mongoose.model('Person', personSchema);
