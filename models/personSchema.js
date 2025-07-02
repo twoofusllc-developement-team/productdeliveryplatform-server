@@ -1,22 +1,22 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-
 const auditFields = {
-    tenantId: {
-        type: Schema.Types.ObjectId,
-        required: true
-      },
-      isDeleted: {
-        type: Boolean,
-        default: false
-      },
-      deletedAt: {
-        type: Date
-      },
+  tenantId: {
+    type: Schema.Types.ObjectId,
+    required: true
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false
+  },
+  deletedAt: {
+    type: Date
+  }
 };
 
 const personSchema = new mongoose.Schema({
+  ...auditFields,
   email: {
     type: String,
     required: true,
@@ -29,6 +29,7 @@ const personSchema = new mongoose.Schema({
   roles: {
     type: [String],
     enum: ['buyer', 'seller', 'admin', 'expert'],
+    required: true
   },
   profile: {
     fullName: String,
@@ -43,7 +44,8 @@ const personSchema = new mongoose.Schema({
         default: 'Point'
       },
       coordinates: {
-        type: [Number], // [longitude, latitude]
+        type: [Number],
+        default: [0, 0],
         index: '2dsphere'
       }
     }
@@ -53,11 +55,11 @@ const personSchema = new mongoose.Schema({
     shopDescription: String,
     shopBanner: String,
     socialLinks: [{
-        type: {
-            type: String,
-            enum: ['facebook', 'instagram', 'twitter','tiktok','youtube', 'linkedin', 'other']
-        },
-        link: String
+      type: {
+        type: String,
+        enum: ['facebook', 'instagram', 'twitter', 'tiktok', 'youtube', 'linkedin', 'other']
+      },
+      link: String
     }],
     shippingPolicy: String,
     deliverySettings: String,
@@ -85,14 +87,9 @@ const personSchema = new mongoose.Schema({
     }]
   },
   settings: {
-    language: String,
-    notificationsEnabled: Boolean
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
- 
+    language: { type: String, default: 'en' },
+    notificationsEnabled: { type: Boolean, default: true }
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Person', personSchema);

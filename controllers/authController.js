@@ -1,57 +1,55 @@
-// controllers/authController.js
-/*const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const User = require("../models/personModel");
+const Person = require("../models/personSchema");
 
-//  1. Utility: Sign a JWT token for the user
-const signToken = (user) => {
+// 1. Utility: Sign a JWT token for the user
+const signToken = (person) => {
   return jwt.sign(
     {
-      id: user._id,
-      role: user.role,
+      id: person._id,
+      role: person.roles[0] // Assuming the first role is the primary one
     },
     process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || "15m" } // default to 15 minutes
+    { expiresIn: process.env.JWT_EXPIRES_IN || "15m" }
   );
 };
 
 // 2. Send token to client
-const createSendToken = (user, statusCode, message, res) => {
-  const token = signToken(user);
+const createSendToken = (person, statusCode, message, res) => {
+  const token = signToken(person);
 
   const sanitizedUser = {
-    id: user._id,
-    name: user.fName,
-    role: user.role,
+    id: person._id,
+    role: person.roles[0]
   };
 
   res.status(statusCode).json({
     status: "Success",
     token,
-    data: { user: sanitizedUser },
-    message,
+    data: { person: sanitizedUser },
+    message
   });
 };
 
-//  3. LOGIN controller
+// 3. LOGIN Controller
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     // Check if user exists
-    const targetUser = await User.findOne({ email });
-    if (!targetUser) {
+    const targetPerson = await Person.findOne({ email });
+    if (!targetPerson) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
     // Compare password
-    const isMatch = await bcrypt.compare(password, targetUser.password);
+    const isMatch = await bcrypt.compare(password, targetPerson.passwordHash);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    // Send token if login is valid
-    createSendToken(targetUser, 200, "You are logged in", res);
+    // Send token
+    createSendToken(targetPerson, 200, "You are logged in", res);
 
   } catch (err) {
     console.error("Login error:", err);
@@ -59,35 +57,43 @@ exports.login = async (req, res) => {
   }
 };
 
-// 🛡️ 4. PROTECT middleware (auth guard)
+// 4. PROTECT Middleware
 exports.protect = async (req, res, next) => {
   try {
-    // Get token from header
     let token;
     const authHeader = req.headers.authorization;
+
     if (authHeader?.startsWith("Bearer ")) {
       token = authHeader.split(" ")[1];
     }
 
     if (!token) {
-      return res.status(401).json({ message: "Not authorized. No token provided." });
+      return res.status(401).json({ message: "Not authenticated" });
     }
 
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Check if user still exists
-    const currentUser = await User.findById(decoded.id);
-    if (!currentUser) {
-      return res.status(401).json({ message: "User no longer exists." });
+    const currentPerson = await Person.findById(decoded.id);
+    if (!currentPerson) {
+      return res.status(401).json({ message: "User no longer exists" });
     }
 
     // Attach user to request
-    req.user = currentUser;
-    next(); // move to the next middleware or route
+    req.user = currentPerson;
+
+    // 🔧 Attach role explicitly from decoded token or DB
+    req.user.role = decoded.role || currentPerson.roles[0];
+
+    next();
 
   } catch (err) {
-    console.error("Auth error:", err);
-    res.status(401).json({ message: "Not authorized. Invalid or expired token." });
+    if (err.name === "TokenExpiredError") {
+      return res.status(401).json({ message: "Token expired, please login again" });
+    }
+    console.error("Auth middleware error:", err);
+    res.status(500).json({ message: "Something went wrong" });
   }
-}; */
+};
+

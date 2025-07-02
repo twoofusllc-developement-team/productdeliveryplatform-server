@@ -1,4 +1,4 @@
-const Offering = require('../models/Offering');
+const Offering = require('../models/offeringSchema');
 
 const allowedTypesByRole = {
   buyer: ['bookable'],
@@ -31,12 +31,22 @@ exports.createOffering = async (req, res) => {
     }
 
    
-    const allowedTypes = allowedTypesByRole[user.role];
-    if (!allowedTypes || !allowedTypes.includes(type)) {
-      return res.status(403).json({
-        error: `Role '${user.role}' is not allowed to create offering of type '${type}'`
-      });
+    let allowed = false;
+
+    for (const role of user.roles) {
+    const allowedTypes = allowedTypesByRole[role];
+    if (allowedTypes && allowedTypes.includes(type)) {
+        allowed = true;
+        break;
     }
+    }
+
+    if (!allowed) {
+    return res.status(403).json({
+        error: `Roles '${user.roles}' are not allowed to create offering of type '${type}'`
+    });
+    }
+
 
    
     const offering = new Offering({
@@ -67,20 +77,26 @@ exports.createOffering = async (req, res) => {
 exports.getOfferings = async (req, res) => {
     try {
       const user = req.user;
-      const allowedTypes = allowedTypesByRole[user.role];
   
-      if (!allowedTypes) {
+      // Collect allowedTypes from all user roles
+      let allowedTypes = [];
+      for (const role of user.roles) {
+        if (allowedTypesByRole[role]) {
+          allowedTypes = allowedTypes.concat(allowedTypesByRole[role]);
+        }
+      }
+  
+      if (allowedTypes.length === 0) {
         return res.status(403).json({ error: 'Unauthorized role' });
       }
   
       const { type } = req.query;
-  
       const query = { isDeleted: false };
   
       if (type) {
         if (!allowedTypes.includes(type)) {
           return res.status(403).json({
-            error: `Role '${user.role}' is not allowed to view offerings of type '${type}'`
+            error: `Roles '${user.roles}' are not allowed to view offerings of type '${type}'`
           });
         }
         query.type = type;
@@ -96,4 +112,5 @@ exports.getOfferings = async (req, res) => {
       res.status(500).json({ error: 'Internal server error' });
     }
   };
+  
   
