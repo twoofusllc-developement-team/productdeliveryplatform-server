@@ -1,0 +1,92 @@
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+  
+  .modal-content {
+    background: white;
+    padding: 50px;
+    border-radius: 12px;
+    width: 600px; /* significantly wider */
+    max-width: 90%;
+    position: relative;
+    text-align: center;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  
+  .modal-content h2 {
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    color: #333;
+  }
+  
+  .modal-content label {
+    display: block;
+    text-align: left;
+    margin: 10px 0 5px;
+    font-weight: bold;
+    font-size: 1rem;
+  }
+  
+  .modal-content input,
+  .modal-content select {
+    width: 90%;
+    padding: 15px;
+    margin: 10px 0 20px;
+    font-size: 1.1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .modal-content input:focus,
+  .modal-content select:focus {
+    outline: none;
+    border-color: #7d4c3c;
+  }
+  
+  .modal-content button {
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    background-color: #7d4c3c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .modal-content button:hover {
+    background-color: #5a322a;
+  }
+  
+  .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    border: none;
+    background: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+  }
+  
+  @media (max-width: 768px) {
+    .modal-content {
+      width: 90%;
+      padding: 30px;
+      font-size: 1rem;
+    }
+  
+    .modal-content button {
+      width: 100%;
+    }
+  }
+  

@@ -1,0 +1,42 @@
+.homepage {
+    text-align: center;
+  }
+  
+  .hero-header {
+    background: #f7f0e8;
+    padding: 40px 20px;
+  }
+  
+  .hero-header h1 {
+    font-size: 5.2rem; /* Larger title */
+    margin-bottom: 10px;
+    font-family: 'Georgia', serif;
+  }
+  
+  .hero-header p {
+    font-size: 4.2rem;
+    margin-bottom: 20px;
+    color: #444;
+  }
+  
+  .hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+  }
+  
+  .hero-btn {
+    font-size: 4.1rem;
+    padding: 12px 28px;
+    border: none;
+    border-radius: 8px;
+    background-color: #bb6b2c;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .hero-btn:hover {
+    background-color: #a95c21;
+  }
+  
