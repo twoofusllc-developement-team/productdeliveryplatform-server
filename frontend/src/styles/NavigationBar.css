@@ -58,6 +58,13 @@
     background: #b86830;
 }
 
+.navbar-btn.icon-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+}
+
 @media (max-width: 768px) {
     .navbar {
         padding: 12px 20px;
@@ -70,5 +77,10 @@
     .navbar-btn {
         padding: 6px 16px;
         font-size: 0.85rem;
+    }
+    
+    .navbar-btn.icon-btn {
+        padding: 6px 12px;
+        gap: 4px;
     }
 }

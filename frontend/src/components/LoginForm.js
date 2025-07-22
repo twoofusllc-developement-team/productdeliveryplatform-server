@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Add this import
 import axios from 'axios';
 
 const LoginForm = () => {
+  const navigate = useNavigate(); // Add this hook
   const [role, setRole] = useState('buyer');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,9 +18,17 @@ const LoginForm = () => {
       });
 
       console.log("Login success:", response.data);
-      alert("Login successful!");
+      
+      // Store the token (if your API returns one)
+      if (response.data.token) {
+        localStorage.setItem('authToken', response.data.token);
+        localStorage.setItem('userRole', role);
+      }
 
-      // TODO: handle storing token, redirect, etc.
+      alert("Login successful!");
+      
+      // Navigate to dashboard after successful login
+      navigate('/dashboard'); // Add this line
 
     } catch (error) {
       console.error("Login error:", error.response?.data || error.message);
