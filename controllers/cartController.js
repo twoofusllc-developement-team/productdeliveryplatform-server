@@ -36,6 +36,9 @@ exports.addItemToCart = async (req, res) => {
         return failedResponse(404, "Offering not found or unavailable.", res);
       }
 
+       if (offering.sellerId.toString() === user._id.toString()) {
+        return failedResponse(403, "You cannot add your own offering to your cart.", res);
+      }
  
       if (offering.type === 'physical' && offering.inventory < quantity) {
         return failedResponse(409, 'Not enough stock for offering ${offering.title}.', res);
